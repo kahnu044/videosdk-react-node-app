@@ -1,19 +1,32 @@
 import React, { useState, useEffect } from "react";
+import {
+  HiOutlineVideoCamera,
+  HiOutlineVideoCameraSlash,
+} from "react-icons/hi2";
+
+import { BsMic, BsMicMute } from "react-icons/bs";
 
 const Home = () => {
   // States for the dropdowns (camera, mic, speaker)
+  const [isCameraOn, setIsCameraOn] = useState(true);
+  const [isMicOn, setIsMicOn] = useState(true);
   const [cameraList, setCameraList] = useState([]);
   const [micList, setMicList] = useState([]);
   const [speakerList, setSpeakerList] = useState([]);
   const [selectedCamera, setSelectedCamera] = useState("");
   const [selectedMic, setSelectedMic] = useState("");
   const [selectedSpeaker, setSelectedSpeaker] = useState("");
-
+  const toggleCamera = () => {
+    setIsCameraOn(!isCameraOn);
+  };
+  const toggleMic = () => {
+    setIsMicOn(!isMicOn);
+  };
   useEffect(() => {
     // Simulating media device retrieval (e.g., camera, mic, speaker)
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-      const cameras = devices.filter((device) => device.kind === "videoinput");
-      const mics = devices.filter((device) => device.kind === "audioinput");
+    navigator?.mediaDevices?.enumerateDevices().then((devices) => {
+      const cameras = devices?.filter((device) => device.kind === "videoinput");
+      const mics = devices?.filter((device) => device.kind === "audioinput");
       const speakers = devices.filter(
         (device) => device.kind === "audiooutput"
       );
@@ -24,11 +37,37 @@ const Home = () => {
     });
   }, []);
   return (
-    <div className="flex flex-col md:flex-row items-center justify-evenly min-h-screen bg-gray-100 p-4">
+    <div className="flex flex-col lg:flex-row items-center justify-center  lg:justify-evenly min-h-screen bg-gray-100 p-4">
+
+
       {/* Left Section (Camera Overview) */}
-      <div className="w-full md:w-1/2 flex flex-col  justify-between items-center p-4 rounded-lg mb-4 md:mb-0">
-        <div className="bg-black w-full h-64 md:h-[400px] rounded-lg flex items-center justify-center">
+      <div className="w-full sm:w-3/4 lg:w-1/2 flex flex-col  justify-between items-center p-4 rounded-lg mb-4 lg:mb-0">
+        <div className="bg-black w-full h-64 lg:h-[400px] rounded-lg flex items-center justify-center relative">
           <video className="w-full h-full object-cover" autoPlay muted></video>{" "}
+          <span className="absolute text-white bottom-3 left-3">Kahnu</span>
+
+
+          <span className="absolute text-white">{ isCameraOn ? "Camera is on" : "Camera is off "}</span>
+
+          <div className="absolute bottom-3 flex gap-4">
+            <span
+              className={`text-white text-2xl rounded-full border p-4 cursor-pointer ${!isMicOn ? "bg-red-500" :  ""} `}
+              onClick={toggleMic}
+            >
+              {isMicOn ? <BsMic /> : <BsMicMute />}
+            </span>
+
+            <span
+              className={`text-white text-2xl rounded-full border p-4 cursor-pointer ${!isCameraOn ? "bg-red-500" :  ""} `}
+              onClick={toggleCamera}
+            >
+              {isCameraOn ? (
+                <HiOutlineVideoCamera />
+              ) : (
+                <HiOutlineVideoCameraSlash />
+              )}
+            </span>
+          </div>
         </div>
 
         {/* Dropdowns for Camera, Mic, and Speaker */}
@@ -40,7 +79,7 @@ const Home = () => {
               onChange={(e) => setSelectedCamera(e.target.value)}
               className="w-full mt-2 px-4 py-2 bg-gray-100 rounded-lg border border-gray-300"
             >
-              {cameraList.map((camera, index) => (
+              {cameraList?.map((camera, index) => (
                 <option key={index} value={camera.deviceId}>
                   {camera.label || `Camera ${index + 1}`}
                 </option>
@@ -55,7 +94,7 @@ const Home = () => {
               onChange={(e) => setSelectedMic(e.target.value)}
               className="w-full mt-2 px-4 py-2 bg-gray-100 rounded-lg border border-gray-300"
             >
-              {micList.map((mic, index) => (
+              {micList?.map((mic, index) => (
                 <option key={index} value={mic.deviceId}>
                   {mic.label || `Microphone ${index + 1}`}
                 </option>
@@ -81,7 +120,7 @@ const Home = () => {
       </div>
 
       {/* Right Section */}
-      <div className="w-full md:w-1/3 flex flex-col justify-between items-center bg-white p-6 rounded-lg shadow-lg">
+      <div className="w-full sm:w-3/4 lg:w-1/3 flex flex-col justify-between items-center p-6">
         <div className="w-full text-center mb-6">
           <button
             onClick={() => alert("Create Meeting")}
