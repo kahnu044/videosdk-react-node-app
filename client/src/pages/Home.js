@@ -49,16 +49,16 @@ const Home = () => {
 
           <span className="absolute text-white">{ isCameraOn ? "Camera is on" : "Camera is off "}</span>
 
-          <div className="absolute bottom-3 flex gap-4">
+          <div className="absolute bottom-3 flex gap-4 items-center">
             <span
-              className={`text-white text-2xl rounded-full border p-4 cursor-pointer ${!isMicOn ? "bg-red-500" :  ""} `}
+              className={`text-white text-xl md:text-2xl rounded-full border p-3 md:p-4  cursor-pointer ${!isMicOn ? "bg-red-500" :  ""} `}
               onClick={toggleMic}
             >
               {isMicOn ? <BsMic /> : <BsMicMute />}
             </span>
 
             <span
-              className={`text-white text-2xl rounded-full border p-4 cursor-pointer ${!isCameraOn ? "bg-red-500" :  ""} `}
+              className={`text-white text-xl md:text-2xl rounded-full border p-3 md:p-4 cursor-pointer ${!isCameraOn ? "bg-red-500" :  ""} `}
               onClick={toggleCamera}
             >
               {isCameraOn ? (
@@ -71,8 +71,8 @@ const Home = () => {
         </div>
 
         {/* Dropdowns for Camera, Mic, and Speaker */}
-        <div className="w-full flex items-center gap-2 justify-around">
-          <div>
+        <div className="w-full flex flex-col md:flex-row items-center gap-0 md:gap-2 justify-around">
+          <div className="w-full">
             <select
               id="camera"
               value={selectedCamera}
@@ -87,7 +87,7 @@ const Home = () => {
             </select>
           </div>
 
-          <div>
+          <div className="w-full">
             <select
               id="mic"
               value={selectedMic}
@@ -102,7 +102,7 @@ const Home = () => {
             </select>
           </div>
 
-          <div>
+          <div className="w-full">
             <select
               id="speaker"
               value={selectedSpeaker}
