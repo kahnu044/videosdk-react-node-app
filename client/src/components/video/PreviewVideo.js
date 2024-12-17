@@ -5,7 +5,7 @@ import {
 } from "react-icons/hi2";
 import { BsMic, BsMicMute } from "react-icons/bs";
 
-function CameraOverview() {
+function PreviewVideo() {
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isMicOn, setIsMicOn] = useState(true);
   const [cameraList, setCameraList] = useState([]);
@@ -120,4 +120,4 @@ function CameraOverview() {
   );
 }
 
-export default CameraOverview;
+export default PreviewVideo;
