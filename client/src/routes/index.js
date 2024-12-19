@@ -1,11 +1,16 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router";
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router";
 import PublicRoutes from "./publicRoutes";
 import PrivateRoutes from "./privateRoutes";
 
 function RoutesIndex() {
+  const [token, setToken] = useState(null);
+  const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, [navigate]);
 
   return (
     <Routes>
@@ -13,7 +18,11 @@ function RoutesIndex() {
       {PublicRoutes}
 
       {/* Private Routes (Only accessible when logged in) */}
-      {token ? PrivateRoutes : <Route path="*" element={<Navigate to="/login" />} />}
+      {token ? (
+        PrivateRoutes
+      ) : (
+        <Route path="*" element={<Navigate to="/login" />} />
+      )}
     </Routes>
   );
 }

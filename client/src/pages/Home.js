@@ -10,7 +10,7 @@ function Home() {
     if (token) {
       setIsLoggedIn(true);
     }
-  }, []);
+  }, [navigate]);
 
   const handleGetStarted = () => {
     if (isLoggedIn) {
@@ -21,7 +21,7 @@ function Home() {
   };
 
   return (
-    <section className="flex flex-col lg:flex-row justify-between items-center h-screen px-8 lg:px-16 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700">
+    <section className="flex flex-col lg:flex-row justify-center items-center h-screen px-8 lg:px-16 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700">
       <div className="w-full lg:w-1/2 text-center lg:text-left space-y-6 text-white">
         <h1 className="text-4xl lg:text-6xl font-bold">
           Host or Join Live Meetings Instantly
