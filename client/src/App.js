@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from "react-router"; // Correct import
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Meeting from "./pages/Meeting";
+import Meetings from "./pages/Meetings";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -19,7 +20,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/:meetingId" element={<Meeting />} />
+        <Route path="/meetings" element={<Meetings />} />
+        <Route path="/meetings/:meetingId" element={<Meeting />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
