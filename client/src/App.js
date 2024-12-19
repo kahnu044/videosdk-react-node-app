@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router"; // Correct import
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Meeting from "./pages/Meeting";
+import NotFound from "./pages/NotFound";
 
 function App() {
   const navigate = useNavigate();
@@ -17,6 +19,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/:meetingId" element={<Meeting />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
