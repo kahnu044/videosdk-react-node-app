@@ -9,6 +9,7 @@ function Meeting() {
   const { meetingId } = useParams();
 
   useEffect(() => {
+    document.title = "Meeting";
     // Define the regex for a valid meeting ID pattern
     const validMeetingIdPattern =
       /^[a-zA-Z0-9]{3}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}$/;

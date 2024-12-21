@@ -6,6 +6,7 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "Home";
     const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true);
