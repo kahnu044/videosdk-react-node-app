@@ -192,6 +192,54 @@ app.post("/create-meeting", async (req, res) => {
   }
 });
 
+// Validate meeting - https://docs.videosdk.live/api-reference/realtime-communication/validate-room
+app.post("/validate-meeting", async (req, res) => {
+  try {
+    const { token, roomId } = req.body;
+
+    // token required
+    if (!token || !roomId) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide required field token and roomId",
+      });
+    }
+
+    const url = `${API_ENDPOINT}/rooms/validate/${roomId}`;
+
+    const options = {
+      method: "GET",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      }
+    };
+
+    const response = await axios(url, options);
+    const data = response.data;
+
+    // Send respond to the client
+    return res.json({
+      success: true,
+      meetingData: data,
+    });
+  } catch (error) {
+    // Handle errors from Axios or API
+    if (error?.response) {
+      return res.status(error?.response?.status || 500).json({
+        success: false,
+        message: "Failed to validate the meeting",
+        error: error?.response?.data?.error || error?.response?.data || "Something went wrong",
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
