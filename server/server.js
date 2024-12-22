@@ -22,36 +22,66 @@ app.get("/", (req, res) => {
 });
 
 // Get meeting token
-app.get("/get-token", (req, res) => {
+app.post("/get-token", (req, res) => {
+  try {
+    const { roomId, participantId, roles } = req.body;
 
-  const options = { expiresIn: "10m", algorithm: "HS256" };
+    // Validation
+    if (!API_KEY || !SECRET_KEY) {
+      return res.status(500).json({
+        success: false,
+        message: "Missing API_KEY or SECRET_KEY in the server configuration",
+      });
+    }
 
-  const { roomId, participantId, roles } = req.body;
+    const options = { expiresIn: "10m", algorithm: "HS256" };
 
-  let payload = {
-    apikey: API_KEY,
-    permissions: ["allow_join", "allow_mod"], // also accepts "ask_join"
-    version: 2,
-  };
+    let payload = {
+      apikey: API_KEY,
+      permissions: ["allow_join", "allow_mod"], // also accepts "ask_join"
+      version: 2,
+    };
 
-  // OPTIONAL - roomId: `2kyv-gzay-64pg` - To provide customized access control, you can make the token applicable to a particular room by including the roomId in the payload.
-  if (roomId) {
-    payload.roomId = roomId;
+    // OPTIONAL: roomId
+    if (roomId) {
+      payload.roomId = roomId;
+    }
+
+    // OPTIONAL: participantId
+    if (participantId) {
+      payload.participantId = participantId;
+    }
+
+    // OPTIONAL: roles (must be an array if provided)
+    if (roles && Array.isArray(roles)) {
+      payload.roles = roles;
+    } else if (roles && !Array.isArray(roles)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid roles format. It should be an array.",
+      });
+    }
+
+    // Generate Token
+    const token = jwt.sign(payload, SECRET_KEY, options);
+
+    // Respond with success and token
+    res.json({
+      success: true,
+      message: "Successfully token generated",
+      token,
+      expiresIn: options.expiresIn
+    });
+  } catch (error) {
+    console.error("Error generating token: ", error);
+
+    // Catching and returning error
+    res.status(500).json({
+      success: false,
+      message: "Error generating token",
+      error: error.message || "Internal Server Error",
+    });
   }
-
-  // OPTIONAL - participantId: `lxvdplwt` - You can include the participantId in the payload to limit the token's access to a particular participant.
-  if (participantId) {
-    payload.participantId = participantId;
-  }
-
-  // OPTIONAL - roles: ["crawler", "rtc"] - crawler role is only for accessing v2 API, you can not use this token for running the Meeting/Room. rtc is only allow for running the Meeting / Room, you can not use server-side APIs.
-  if (roles) {
-    payload.roles = roles;
-  }
-
-  // Generate Token
-  const token = jwt.sign(payload, SECRET_KEY, options);
-  res.json({ token });
 });
 
 // Start server
