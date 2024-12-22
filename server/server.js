@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Get meeting token
+// Get meeting token - https://docs.videosdk.live/api-reference/realtime-communication/intro
 app.post("/get-token", (req, res) => {
   try {
     const { roomId, participantId, roles, permissions } = req.body;
