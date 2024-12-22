@@ -176,10 +176,19 @@ app.post("/create-meeting", async (req, res) => {
       meetingData: data,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error?.response?.data || "Something went wrong",
-    });
+    // Handle errors from Axios or API
+    if (error?.response) {
+      return res.status(error?.response?.status || 500).json({
+        success: false,
+        message: "Failed to create meeting",
+        error: error?.response?.data?.error || error?.response?.data || "Something went wrong",
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
   }
 });
 
