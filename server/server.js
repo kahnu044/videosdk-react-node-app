@@ -13,6 +13,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 3002;
 const API_KEY = process.env.VIDEOSDK_API_KEY;
 const SECRET_KEY = process.env.VIDEOSDK_SECRET_KEY;
+const API_ENDPOINT = process.env.VIDEOSDK_API_ENDPOINT;
 
 // Accepted values for permissions and roles
 const ACCEPTED_PERMISSIONS = ["allow_join", "allow_mod", "ask_join"];
@@ -116,6 +117,47 @@ app.post("/get-token", (req, res) => {
       success: false,
       message: "Error generating token",
       error: error.message || "Internal Server Error",
+    });
+  }
+});
+
+// Create meeting
+app.post("/create-meeting", async (req, res) => {
+  try {
+    const { token, customRoomId, webhook, autoCloseConfig, autoStartConfig } =
+      req.body;
+
+    // token required
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "token is required",
+      });
+    }
+
+    const url = `${API_ENDPOINT}/rooms`;
+
+    const options = {
+      method: "POST",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+      data: {},
+    };
+
+    const response = await axios(url, options);
+    const data = response.data;
+
+    // Send respond to the client
+    return res.json({
+      success: true,
+      meetingData: data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.response.data || "Something went wrong",
     });
   }
 });
