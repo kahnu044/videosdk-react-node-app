@@ -14,6 +14,10 @@ const PORT = process.env.PORT || 3002;
 const API_KEY = process.env.VIDEOSDK_API_KEY;
 const SECRET_KEY = process.env.VIDEOSDK_SECRET_KEY;
 
+// Accepted values for permissions and roles
+const ACCEPTED_PERMISSIONS = ["allow_join", "allow_mod", "ask_join"];
+const ACCEPTED_ROLES = ["crawler", "rtc"];
+
 app.get("/", (req, res) => {
   res.status(200).json({
     status: true,
@@ -24,7 +28,7 @@ app.get("/", (req, res) => {
 // Get meeting token
 app.post("/get-token", (req, res) => {
   try {
-    const { roomId, participantId, roles } = req.body;
+    const { roomId, participantId, roles, permissions } = req.body;
 
     // Validation
     if (!API_KEY || !SECRET_KEY) {
@@ -38,7 +42,7 @@ app.post("/get-token", (req, res) => {
 
     let payload = {
       apikey: API_KEY,
-      permissions: ["allow_join", "allow_mod"], // also accepts "ask_join"
+      permissions: ["ask_join"], // Default to 'ask_join'
       version: 2,
     };
 
@@ -52,13 +56,45 @@ app.post("/get-token", (req, res) => {
       payload.participantId = participantId;
     }
 
-    // OPTIONAL: roles (must be an array if provided)
+    // Permissions validation
+    if (permissions && Array.isArray(permissions)) {
+      const invalidPermissions = permissions.filter(
+        (perm) => !ACCEPTED_PERMISSIONS.includes(perm)
+      );
+      if (invalidPermissions.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid permissions: ${invalidPermissions.join(
+            ", "
+          )}. Allowed values are: ${ACCEPTED_PERMISSIONS.join(", ")}`,
+        });
+      }
+      payload.permissions = permissions;
+    } else if (permissions && !Array.isArray(permissions)) {
+      return res.status(400).json({
+        success: false,
+        message: "Permissions must be provided as an array.",
+      });
+    }
+
+    // Roles validation
     if (roles && Array.isArray(roles)) {
+      const invalidRoles = roles.filter(
+        (role) => !ACCEPTED_ROLES.includes(role)
+      );
+      if (invalidRoles.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid roles: ${invalidRoles.join(
+            ", "
+          )}. Allowed values are: ${ACCEPTED_ROLES.join(", ")}`,
+        });
+      }
       payload.roles = roles;
     } else if (roles && !Array.isArray(roles)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid roles format. It should be an array.",
+        message: "Roles must be provided as an array.",
       });
     }
 
@@ -70,7 +106,7 @@ app.post("/get-token", (req, res) => {
       success: true,
       message: "Successfully token generated",
       token,
-      expiresIn: options.expiresIn
+      expiresIn: options.expiresIn,
     });
   } catch (error) {
     console.error("Error generating token: ", error);
