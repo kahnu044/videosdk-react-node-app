@@ -121,7 +121,7 @@ app.post("/get-token", (req, res) => {
   }
 });
 
-// Create meeting
+// Create meeting - https://docs.videosdk.live/api-reference/realtime-communication/create-room
 app.post("/create-meeting", async (req, res) => {
   try {
     const { token, customRoomId, webhook, autoCloseConfig, autoStartConfig } =
@@ -137,13 +137,34 @@ app.post("/create-meeting", async (req, res) => {
 
     const url = `${API_ENDPOINT}/rooms`;
 
+    let bodyData = {};
+
+    if (customRoomId) {
+      bodyData.customRoomId = customRoomId;
+    }
+
+    // Webhook docs - https://docs.videosdk.live/api-reference/realtime-communication/create-room#webhook
+    if (webhook) {
+      bodyData.webhook = webhook;
+    }
+
+    // autoCloseConfig - https://docs.videosdk.live/api-reference/realtime-communication/create-room#autoCloseConfig
+    if (autoCloseConfig) {
+      bodyData.autoCloseConfig = autoCloseConfig;
+    }
+
+    // autoStartConfig - https://docs.videosdk.live/api-reference/realtime-communication/create-room#autoStartConfig
+    if (autoStartConfig) {
+      bodyData.autoStartConfig = autoStartConfig;
+    }
+
     const options = {
       method: "POST",
       headers: {
         Authorization: token,
         "Content-Type": "application/json",
       },
-      data: {},
+      data: bodyData,
     };
 
     const response = await axios(url, options);
@@ -157,7 +178,7 @@ app.post("/create-meeting", async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.response.data || "Something went wrong",
+      message: error?.response?.data || "Something went wrong",
     });
   }
 });
