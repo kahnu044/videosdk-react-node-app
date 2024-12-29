@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import PublicRoutes from "./publicRoutes";
 import PrivateRoutes from "./privateRoutes";
 
 function RoutesIndex() {
   const [token, setToken] = useState(null);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
-  }, [navigate]);
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Routes>
@@ -21,7 +26,7 @@ function RoutesIndex() {
       {token ? (
         PrivateRoutes
       ) : (
-        <Route path="*" element={<Navigate to="/login" />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       )}
     </Routes>
   );
