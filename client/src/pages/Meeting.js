@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import NotFound from "./NotFound";
+import Header from "../components/meeting/Header";
+import MainMeeting from "../components/meeting/MainMeeting";
+import Footer from "../components/meeting/Footer";
 
 function Meeting() {
   const [isValidMeetingId, setIsValidMeetingId] = useState(true);
+  const [showChatBox, setShowChatBox] = useState(false);
 
   const navigate = useNavigate();
   const { meetingId } = useParams();
@@ -22,14 +26,23 @@ function Meeting() {
     }
   }, [meetingId, navigate]);
 
+  const handleToggleChatBox = () => {
+    setShowChatBox((prev) => !prev);
+  };
+
   if (!isValidMeetingId) {
     return <NotFound />;
   }
 
   return (
     <div>
-      <h1>Meeting Page</h1>
-      <p>Meeting ID: {meetingId}</p>
+      <div className="flex flex-col min-h-screen bg-slate-500">
+        <Header />
+
+        <MainMeeting />
+
+        <Footer />
+      </div>
     </div>
   );
 }
