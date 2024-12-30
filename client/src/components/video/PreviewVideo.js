@@ -38,7 +38,7 @@ function PreviewVideo() {
     getCameras,
     getMicrophones,
     getPlaybackDevices,
-  } = useMediaDevice();
+  } = useMediaDevice({ onDeviceChanged });
 
   // check permission for camera and microphone
   const checkMediaPermission = async () => {
@@ -77,7 +77,7 @@ function PreviewVideo() {
   useEffect(() => {
     checkMediaPermission();
     return () => {};
-  }, []);
+  });
 
   // Step 2: Request Permissions - https://docs.videosdk.live/react/guide/video-and-audio-calling-api-sdk/setup-call/precall#step-2-request-permissions-if-necessary
   // In case permissions are blocked by the user, the browser's permission request dialogue cannot be re-rendered programmatically. In such cases, consider providing guidance to users on manually adjusting their browser settings.
@@ -137,6 +137,12 @@ function PreviewVideo() {
       console.log("Error in getting audio or video devices", err);
     }
   };
+
+  function onDeviceChanged(devices) {
+    console.log("Device Changed", devices);
+    getMediaDevices(Constants.permission.VIDEO);
+    getMediaDevices(Constants.permission.AUDIO);
+  }
 
   return (
     <div>
