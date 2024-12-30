@@ -16,7 +16,7 @@ function PreviewVideo() {
   const [selectedCamera, setSelectedCamera] = useState("");
   const [selectedMic, setSelectedMic] = useState("");
   const [selectedSpeaker, setSelectedSpeaker] = useState("");
-  const { isCameraAllowed, setIsCameraAllowed, setIsMicrophoneAllowed } =
+  const { isCameraAllowed, isMicrophoneAllowed, setIsCameraAllowed, setIsMicrophoneAllowed } =
     useContext(AppContext);
 
   const toggleCamera = () => {
@@ -42,7 +42,13 @@ function PreviewVideo() {
   }, []);
 
   // Step 1: Check Permissions - https://docs.videosdk.live/react/guide/video-and-audio-calling-api-sdk/setup-call/precall#step-1-check-permissions
-  const { checkPermissions, requestPermission } = useMediaDevice();
+  const {
+    checkPermissions,
+    requestPermission,
+    getCameras,
+    getMicrophones,
+    getPlaybackDevices,
+  } = useMediaDevice();
 
   // check permission for camera and microphone
   const checkMediaPermission = async () => {
@@ -102,6 +108,37 @@ function PreviewVideo() {
       console.log("Error in requestPermission", ex);
     }
   }
+
+  // Step 3: Render Device List - https://docs.videosdk.live/react/guide/video-and-audio-calling-api-sdk/setup-call/precall#step-3-render-device-list
+  useEffect(() => {
+    getMediaDevices(Constants.permission.VIDEO);
+  }, [isCameraAllowed]);
+
+  useEffect(() => {
+    getMediaDevices(Constants.permission.AUDIO);
+  }, [isMicrophoneAllowed]);
+
+  const getMediaDevices = async (mediaType) => {
+    try {
+
+      //Method to get all available webcams.
+      if (mediaType === Constants.permission.VIDEO) {
+        let webcams = await getCameras();
+        console.log("webcams", webcams);
+      }
+
+      //Method to get all available Microphones and speaker.
+      if (mediaType === Constants.permission.AUDIO) {
+        let mics = await getMicrophones();
+        console.log("mics", mics);
+
+        let speakers = await getPlaybackDevices();
+        console.log("speakers", speakers);
+      }
+    } catch (err) {
+      console.log("Error in getting audio or video devices", err);
+    }
+  };
 
   return (
     <div>
