@@ -16,7 +16,8 @@ function PreviewVideo() {
   const [selectedCamera, setSelectedCamera] = useState("");
   const [selectedMic, setSelectedMic] = useState("");
   const [selectedSpeaker, setSelectedSpeaker] = useState("");
-  const { setIsCameraAllowed, setIsMicrophoneAllowed } = useContext(AppContext);
+  const { isCameraAllowed, setIsCameraAllowed, setIsMicrophoneAllowed } =
+    useContext(AppContext);
 
   const toggleCamera = () => {
     setIsCameraOn(!isCameraOn);
@@ -40,6 +41,7 @@ function PreviewVideo() {
     });
   }, []);
 
+  // Step 1: Check Permissions - https://docs.videosdk.live/react/guide/video-and-audio-calling-api-sdk/setup-call/precall#step-1-check-permissions
   const { checkPermissions } = useMediaDevice();
 
   // check permission for camera and microphone
@@ -55,7 +57,6 @@ function PreviewVideo() {
 
       setIsCameraAllowed(isCameraPermissionAllowed);
       setIsMicrophoneAllowed(isMicrophonePermissionAllowed);
-
     } catch (error) {
       console.log(error);
     }
