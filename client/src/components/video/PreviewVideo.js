@@ -16,8 +16,12 @@ function PreviewVideo() {
   const [selectedCamera, setSelectedCamera] = useState("");
   const [selectedMic, setSelectedMic] = useState("");
   const [selectedSpeaker, setSelectedSpeaker] = useState("");
-  const { isCameraAllowed, isMicrophoneAllowed, setIsCameraAllowed, setIsMicrophoneAllowed } =
-    useContext(AppContext);
+  const {
+    isCameraAllowed,
+    isMicrophoneAllowed,
+    setIsCameraAllowed,
+    setIsMicrophoneAllowed,
+  } = useContext(AppContext);
 
   const toggleCamera = () => {
     setIsCameraOn(!isCameraOn);
@@ -26,20 +30,6 @@ function PreviewVideo() {
   const toggleMic = () => {
     setIsMicOn(!isMicOn);
   };
-
-  useEffect(() => {
-    navigator?.mediaDevices?.enumerateDevices().then((devices) => {
-      const cameras = devices.filter((device) => device.kind === "videoinput");
-      const mics = devices.filter((device) => device.kind === "audioinput");
-      const speakers = devices.filter(
-        (device) => device.kind === "audiooutput"
-      );
-
-      setCameraList(cameras);
-      setMicList(mics);
-      setSpeakerList(speakers);
-    });
-  }, []);
 
   // Step 1: Check Permissions - https://docs.videosdk.live/react/guide/video-and-audio-calling-api-sdk/setup-call/precall#step-1-check-permissions
   const {
@@ -120,20 +110,28 @@ function PreviewVideo() {
 
   const getMediaDevices = async (mediaType) => {
     try {
-
       //Method to get all available webcams.
       if (mediaType === Constants.permission.VIDEO) {
         let webcams = await getCameras();
-        console.log("webcams", webcams);
+        if (webcams.length > 0) {
+          setCameraList(webcams);
+          console.log("webcams", webcams);
+        }
       }
 
       //Method to get all available Microphones and speaker.
       if (mediaType === Constants.permission.AUDIO) {
         let mics = await getMicrophones();
-        console.log("mics", mics);
+        if (mics.length > 0) {
+          console.log("mics", mics);
+          setMicList(mics);
+        }
 
         let speakers = await getPlaybackDevices();
-        console.log("speakers", speakers);
+        if (speakers.length > 0) {
+          console.log("speakers", speakers);
+          setSpeakerList(speakers);
+        }
       }
     } catch (err) {
       console.log("Error in getting audio or video devices", err);
