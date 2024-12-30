@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   HiOutlineVideoCamera,
   HiOutlineVideoCameraSlash,
 } from "react-icons/hi2";
 import { BsMic, BsMicMute } from "react-icons/bs";
+import AppContext from "../../context/AppContext";
+import { Constants, useMediaDevice } from "@videosdk.live/react-sdk";
 
 function PreviewVideo() {
   const [isCameraOn, setIsCameraOn] = useState(true);
@@ -14,6 +16,7 @@ function PreviewVideo() {
   const [selectedCamera, setSelectedCamera] = useState("");
   const [selectedMic, setSelectedMic] = useState("");
   const [selectedSpeaker, setSelectedSpeaker] = useState("");
+  const { setIsCameraAllowed, setIsMicrophoneAllowed } = useContext(AppContext);
 
   const toggleCamera = () => {
     setIsCameraOn(!isCameraOn);
@@ -35,6 +38,32 @@ function PreviewVideo() {
       setMicList(mics);
       setSpeakerList(speakers);
     });
+  }, []);
+
+  const { checkPermissions } = useMediaDevice();
+
+  // check permission for camera and microphone
+  const checkMediaPermission = async () => {
+    try {
+      const checkAudioVideoPermission = await checkPermissions();
+      const isCameraPermissionAllowed = checkAudioVideoPermission.get(
+        Constants.permission.VIDEO
+      );
+      const isMicrophonePermissionAllowed = checkAudioVideoPermission.get(
+        Constants.permission.AUDIO
+      );
+
+      setIsCameraAllowed(isCameraPermissionAllowed);
+      setIsMicrophoneAllowed(isMicrophonePermissionAllowed);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    checkMediaPermission();
+    return () => {};
   }, []);
 
   return (
