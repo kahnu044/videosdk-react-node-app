@@ -1,8 +1,13 @@
 import React from "react";
 import RoutesIndex from "./routes";
+import { AppProvider } from "./context/AppContext";
 
 function App() {
-  return <RoutesIndex />;
+  return (
+    <AppProvider>
+      <RoutesIndex />
+    </AppProvider>
+  );
 }
 
 export default App;
