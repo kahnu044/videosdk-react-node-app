@@ -42,7 +42,7 @@ function PreviewVideo() {
   }, []);
 
   // Step 1: Check Permissions - https://docs.videosdk.live/react/guide/video-and-audio-calling-api-sdk/setup-call/precall#step-1-check-permissions
-  const { checkPermissions } = useMediaDevice();
+  const { checkPermissions, requestPermission } = useMediaDevice();
 
   // check permission for camera and microphone
   const checkMediaPermission = async () => {
@@ -55,8 +55,24 @@ function PreviewVideo() {
         Constants.permission.AUDIO
       );
 
-      setIsCameraAllowed(isCameraPermissionAllowed);
-      setIsMicrophoneAllowed(isMicrophonePermissionAllowed);
+      // Check if permission is allowed or not
+      if (isCameraPermissionAllowed) {
+        setIsCameraAllowed(isCameraPermissionAllowed);
+      } else {
+        console.log(
+          "camera permission not allowed, request for camera permission"
+        );
+        await requestAudioVideoPermission(Constants.permission.VIDEO);
+      }
+
+      if (isMicrophonePermissionAllowed) {
+        setIsMicrophoneAllowed(isMicrophonePermissionAllowed);
+      } else {
+        console.log(
+          "microphone permission not allowed, request for microphone permission"
+        );
+        await requestAudioVideoPermission(Constants.permission.AUDIO);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -66,6 +82,26 @@ function PreviewVideo() {
     checkMediaPermission();
     return () => {};
   }, []);
+
+  // Step 2: Request Permissions - https://docs.videosdk.live/react/guide/video-and-audio-calling-api-sdk/setup-call/precall#step-2-request-permissions-if-necessary
+  // In case permissions are blocked by the user, the browser's permission request dialogue cannot be re-rendered programmatically. In such cases, consider providing guidance to users on manually adjusting their browser settings.
+  async function requestAudioVideoPermission(permissionType) {
+    try {
+      const permission = await requestPermission(permissionType);
+
+      if (permissionType === Constants.permission.VIDEO) {
+        const isVideoAllowed = permission.get(Constants.permission.VIDEO);
+        setIsCameraAllowed(isVideoAllowed);
+      }
+
+      if (permissionType === Constants.permission.AUDIO) {
+        const isAudioAllowed = permission.get(Constants.permission.AUDIO);
+        setIsMicrophoneAllowed(isAudioAllowed);
+      }
+    } catch (ex) {
+      console.log("Error in requestPermission", ex);
+    }
+  }
 
   return (
     <div>
